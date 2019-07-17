@@ -11,6 +11,7 @@ UdpSender::UdpSender(QObject *parent) : QObject(parent)
     int i;
 
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+
 #ifdef OUTPUT2FILE
     QFile file("C:/Users/kelle/Desktop/sender.txt");
     if(!file.open(QIODevice::WriteOnly)){
@@ -19,9 +20,11 @@ UdpSender::UdpSender(QObject *parent) : QObject(parent)
     }
     QTextStream stream(&file);
 #endif
+
     QTime t;
     t.start();
 
+    //create messages and send
     for(int j=0; j<3000; j++){
         for(i=0; i<PT_SIZE; i++){
             vec[i] = rand();
@@ -31,6 +34,7 @@ UdpSender::UdpSender(QObject *parent) : QObject(parent)
             qus.writeDatagram(msg, QHostAddress::LocalHost, PORT);
         }
     }
+
     //record t to calculate sending frequency
     //record time to compare with receiver's completion time, in order to prove real-time ability
 #ifdef OUTPUT2FILE

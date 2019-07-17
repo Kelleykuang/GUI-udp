@@ -20,7 +20,7 @@ void record::recording(){
     while(1){
         if(t==3000){
             //stream << QTime::currentTime().toString("hh:mm:ss.zzz") << endl;
-            qDebug() << QTime::currentTime().toString("hh:mm:ss.zzz");
+            qDebug() << QTime::currentTime().toString("hh:mm:ss.zzz");   //output the completion time to compare
             break;
          }
         if(record_list.size() >= maxSize){

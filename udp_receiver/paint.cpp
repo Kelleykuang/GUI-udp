@@ -4,13 +4,13 @@
 #include <QDebug>
 #include <QThread>
 RealTimeCurveQChartWidget::RealTimeCurveQChartWidget(QWidget *parent) : QWidget(parent) {
+    //create and start a receiver thread and a recorder thread
     receiver = new UdpReceiver;
     receiver->moveToThread(&receiveThread);
     recorder = new record;
     recorder->moveToThread(&recordThread);
     connect(this,SIGNAL(startrunning()),receiver,SLOT(receiving()));
     connect(this,SIGNAL(startrunning()),recorder,SLOT(recording()));
-
     receiveThread.start();
     recordThread.start();
 
@@ -47,6 +47,8 @@ RealTimeCurveQChartWidget::RealTimeCurveQChartWidget(QWidget *parent) : QWidget(
     dx = maxX/maxSize;
     //scatterSeries = new QScatterSeries();
     scatterSeries->setMarkerSize(6);
+
+    //try to redraw the screen in every single millisecond
     timerId = startTimer(1);
     /*while(1){
         if(paint_list.size() >= maxSize){
