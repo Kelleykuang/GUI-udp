@@ -9,11 +9,14 @@ RealTimeCurveQChartWidget::RealTimeCurveQChartWidget(QWidget *parent) : QWidget(
     receiver->moveToThread(&receiveThread);
     recorder = new record;
     recorder->moveToThread(&recordThread);
+    distributer = new distribute;
+    distributer->moveToThread(&distributeThread);
     connect(this,SIGNAL(startrunning()),receiver,SLOT(receiving()));
     connect(this,SIGNAL(startrunning()),recorder,SLOT(recording()));
+    connect(this,SIGNAL(startrunning()),distributer,SLOT(distrbuting()));
     receiveThread.start();
     recordThread.start();
-
+    distributeThread.start();
 
     maxSize = 512;
     maxX = 512;
@@ -50,27 +53,15 @@ RealTimeCurveQChartWidget::RealTimeCurveQChartWidget(QWidget *parent) : QWidget(
 
     //try to redraw the screen in every single millisecond
     timerId = startTimer(1);
-    /*while(1){
-        if(paint_list.size() >= maxSize){
-            scatterSeries->clear();
-            for(int i = 0; i < maxSize; i++){
-                paint_lock.lock();
-                data = paint_list.takeFirst();
-                paint_lock.unlock();
-                scatterSeries->append(i*dx, data);
-            }
-            times++;
-            qDebug()<<times;
-        }
-        else QThread::msleep(1);
-    }*/
 }
 RealTimeCurveQChartWidget::~RealTimeCurveQChartWidget(){
     qDebug() <<times;
     receiveThread.quit();
     recordThread.quit();
+    distributeThread.quit();
     receiveThread.wait();
     recordThread.wait();
+    distributeThread.wait();
     delete scatterSeries;
     delete chart;
     delete chartView;

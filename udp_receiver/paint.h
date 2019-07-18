@@ -13,6 +13,7 @@
 #include "common.h"
 #include "record.h"
 #include "UdpReceiver.h"
+#include "distributer.h"
 using namespace QtCharts;
 class RealTimeCurveQChartWidget : public QWidget {
     Q_OBJECT
@@ -38,8 +39,10 @@ signals:
 
         QThread receiveThread;
         QThread recordThread;
+        QThread distributeThread;
         UdpReceiver *receiver;
         record *recorder;
+        distribute *distributer;
 };
 
 

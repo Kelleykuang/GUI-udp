@@ -27,6 +27,7 @@ CONFIG += resources_big
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
+    distributer.cpp \
         main.cpp \
     record.cpp \
     udpreceiver.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
 
 HEADERS += \
     UdpReceiver.h \
+    distributer.h \
     paint.h \
     record.h \
     common.h

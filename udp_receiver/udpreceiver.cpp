@@ -26,7 +26,6 @@ void UdpReceiver::real_receive()
 {
     QByteArray ba;
     QVector<int> vec(512);
-    int i;
     while(uSocket->hasPendingDatagrams())
     {
         ba.resize(uSocket->pendingDatagramSize());
@@ -35,7 +34,11 @@ void UdpReceiver::real_receive()
         QDataStream stream(&ba, QIODevice::ReadWrite);
         vec.clear();
         stream >> vec;
-        count = (count+1)%100;
+        data_lock.lock();
+        //qDebug() << vec;
+        data_list.append(vec);
+        data_lock.unlock();
+        /*count = (count+1)%100;
         record_lock.lock();
         record_list.append(vec);
         record_lock.unlock();
@@ -44,7 +47,7 @@ void UdpReceiver::real_receive()
             paint_list.append(vec);
             paint_lock.unlock();
             //qDebug() << cur_data;
-        }
+        }*/
         //qDebug()<< cur_data ;
     }
 }
