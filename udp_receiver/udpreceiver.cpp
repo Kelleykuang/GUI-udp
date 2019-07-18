@@ -1,5 +1,7 @@
 #include <QByteArray>
 #include <QHBoxLayout>
+#include <QDataStream>
+#include <QIODevice>
 #include "UdpReceiver.h"
 const quint16 PORT = 2333;
 
@@ -22,20 +24,24 @@ void UdpReceiver::receiving()
 }
 void UdpReceiver::real_receive()
 {
-    QByteArray ba("");
-    int cur_data;
+    QByteArray ba;
+    QVector<int> vec(512);
+    int i;
     while(uSocket->hasPendingDatagrams())
     {
         ba.resize(uSocket->pendingDatagramSize());
         uSocket->readDatagram(ba.data(), ba.size());
-        cur_data = ba.toInt();
+        //qDebug() << ba;
+        QDataStream stream(&ba, QIODevice::ReadWrite);
+        vec.clear();
+        stream >> vec;
         count = (count+1)%100;
         record_lock.lock();
-        record_list.append(cur_data);
+        record_list.append(vec);
         record_lock.unlock();
         if(count == 0){
             paint_lock.lock();
-            paint_list.append(cur_data);
+            paint_list.append(vec);
             paint_lock.unlock();
             //qDebug() << cur_data;
         }

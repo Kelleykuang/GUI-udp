@@ -11,27 +11,32 @@ record::record(QObject *parent) : QObject(parent)
 void record::recording(){
     maxSize = 512;
     QFile file("C:/Users/kelle/Desktop/data.txt");
-    if(!file.open(QIODevice::WriteOnly)){
+    if(!file.open(QIODevice::ReadWrite)){
         qDebug() << "can't open file";
         exit(0);
     }
-    QTextStream stream(&file);
+    QDataStream stream(&file);
     int t = 0;
+    int i;
     while(1){
         if(t==3000){
             //stream << QTime::currentTime().toString("hh:mm:ss.zzz") << endl;
             qDebug() << QTime::currentTime().toString("hh:mm:ss.zzz");   //output the completion time to compare
             break;
          }
-        if(record_list.size() >= maxSize){
-            for(int i = 0; i < maxSize; i++){
-                record_lock.lock();
-                data = record_list.takeFirst();
-                record_lock.unlock();
-                stream << data <<endl;
-            }
-            t++;
+        record_lock.lock();
+        if(!record_list.isEmpty()){
+            //for(i=0; i<record_list.size(); i++){
+                //stream << record_list.at(i);
+            //}
+            //stream << endl;
+            stream << record_list;
+            record_list.clear();
+            record_lock.unlock();
         }
-        else QThread::usleep(1);
+        else{
+            record_lock.unlock();
+            QThread::usleep(1);
+        }
     }
 }

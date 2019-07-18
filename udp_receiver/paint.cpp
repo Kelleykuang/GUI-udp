@@ -43,7 +43,7 @@ RealTimeCurveQChartWidget::RealTimeCurveQChartWidget(QWidget *parent) : QWidget(
     this->resize(1400, 800);
     this->show();
 
-    //times = 0;
+    times = 0;
     dx = maxX/maxSize;
     //scatterSeries = new QScatterSeries();
     scatterSeries->setMarkerSize(6);
@@ -66,6 +66,7 @@ RealTimeCurveQChartWidget::RealTimeCurveQChartWidget(QWidget *parent) : QWidget(
     }*/
 }
 RealTimeCurveQChartWidget::~RealTimeCurveQChartWidget(){
+    qDebug() <<times;
     receiveThread.quit();
     recordThread.quit();
     receiveThread.wait();
@@ -76,17 +77,17 @@ RealTimeCurveQChartWidget::~RealTimeCurveQChartWidget(){
 }
 
 void RealTimeCurveQChartWidget::timerEvent(QTimerEvent *event) {
+    paint_lock.lock();
     if(paint_list.size() >= maxSize){
         scatterSeries->clear();
         for(int i = 0; i < maxSize; i++){
-            paint_lock.lock();
-            data = paint_list.takeFirst();
-            paint_lock.unlock();
-            scatterSeries->append(i*dx, data);
+            scatterSeries->append(i*dx, paint_list.at(i));
         }
-        //times++;
-        //qDebug()<<times;
+        paint_list.remove(0,512);
+        paint_lock.unlock();
+        times++;
     }
+    else paint_lock.unlock();
 }
 
 void RealTimeCurveQChartWidget::start(){

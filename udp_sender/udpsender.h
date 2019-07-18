@@ -6,15 +6,20 @@
 #include <iostream>
 #include <QTime>
 #include <QObject>
-
-class UdpSender : public QObject
+#include <QWidget>
+class UdpSender : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UdpSender(QObject *parent = nullptr);
-
+    explicit UdpSender(QWidget *parent = nullptr);
+    ~UdpSender();
+protected:
+    void timerEvent( QTimerEvent *event );
 private:
     QUdpSocket qus;
+    int timerID;
+    int times;
+    QTime t;
 };
 
 #endif // UDPSENDER_H
